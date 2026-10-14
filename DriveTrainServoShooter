@@ -20,12 +20,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 // =========================
-// ΚΟΥΜΠΙΑ: RB -> SHOOTER LEFT ON/OFF + ΠΑΡΑΚΟΛΟΥΘΗΣΗ (ticks, rpm, κτλ)
-//          LB -> SHOOTER RIGHT ON/OFF
+// ΚΟΥΜΠΙΑ: LB -> SHOOTER LEFT ON/OFF + ΠΑΡΑΚΟΛΟΥΘΗΣΗ (ticks, rpm)
+//          RB -> SHOOTER RIGHT ON/OFF
 //          A SLOW MODE
 //          Y FIELD ORIENTED / ROBOT ORIENTED
 //          X INTAKE
-//          B OUTTAKE
 // =========================
 
 @TeleOp(name = "Grobo-DriveTrain_Shooter_Servo")
@@ -53,8 +52,8 @@ public class DriveTrainServoShooter extends LinearOpMode {
 
         // =========================
         // SHOOTERS (toggle ON/OFF)
-        // RB -> shooterLeft (με παρακολούθηση)
-        // LB -> shooterRight
+        // LB -> shooterLeft (με παρακολούθηση)
+        // RB -> shooterRight
         // =========================
 
         boolean shooterLeftOn = false;
@@ -66,8 +65,8 @@ public class DriveTrainServoShooter extends LinearOpMode {
         // Ισχύς των shooter όταν είναι ON
         final double SHOOTER_POWER = 1.0;
 
-        // Ticks ανά περιστροφή του encoder (άλλαξε το ανάλογα με το motor σου)
-        final double SHOOTER_TICKS_PER_REV = 1120;
+        // Ticks ανά περιστροφή του encoder (άλλαξέ το ανάλογα με το motor σου)
+        final double SHOOTER_TICKS_PER_REV = 28;
 
         // --- Παρακολούθηση shooter left ---
         // Χρόνος από τη στιγμή που άνοιξε το shooter
@@ -256,8 +255,8 @@ public class DriveTrainServoShooter extends LinearOpMode {
         telemetry.addData("Drive Mode", "ROBOT CENTRIC");
         telemetry.addData("Slow Mode (B)", "OFF");
         telemetry.addData("Intake", "OFF");
-        telemetry.addData("Shooter Left (RB)", "OFF");
-        telemetry.addData("Shooter Right (LB)", "OFF");
+        telemetry.addData("Shooter Left (LB)", "OFF");
+        telemetry.addData("Shooter Right (RB)", "OFF");
         telemetry.update();
 
         waitForStart();
@@ -301,10 +300,10 @@ public class DriveTrainServoShooter extends LinearOpMode {
 
 
             // =========================
-            // SHOOTER LEFT ON / OFF (RB)
+            // SHOOTER LEFT ON / OFF (LB)
             // =========================
 
-            if (gamepad1.right_bumper && !lastRB) {
+            if (gamepad1.left_bumper && !lastLB) {
                 shooterLeftOn = !shooterLeftOn;
 
                 // Όταν ανοίγει: μηδένισε τα στατιστικά και ξεκίνα χρονόμετρο
@@ -317,20 +316,20 @@ public class DriveTrainServoShooter extends LinearOpMode {
                 }
             }
 
-            lastRB = gamepad1.right_bumper;
+            lastLB = gamepad1.left_bumper;
 
             shooterLeft.setPower(shooterLeftOn ? SHOOTER_POWER : 0.0);
 
 
             // =========================
-            // SHOOTER RIGHT ON / OFF (LB)
+            // SHOOTER RIGHT ON / OFF (RB)
             // =========================
 
-            if (gamepad1.left_bumper && !lastLB) {
+            if (gamepad1.right_bumper && !lastRB) {
                 shooterRightOn = !shooterRightOn;
             }
 
-            lastLB = gamepad1.left_bumper;
+            lastRB = gamepad1.right_bumper;
 
             shooterRight.setPower(shooterRightOn ? SHOOTER_POWER : 0.0);
 
@@ -454,7 +453,7 @@ public class DriveTrainServoShooter extends LinearOpMode {
                 }
 
                 // Θεωρούμε "έφτασε σε ταχύτητα" όταν περάσει το 95% του θεωρητικού max
-                // (θεωρητικό max από το motor σου - άλλαξε το αν χρειάζεται)
+                // (θεωρητικό max από το motor σου - άλλαξέ το αν χρειάζεται)
                 final double SHOOTER_MAX_RPM = 6000;
                 if (shooterLeftSpinUpTime < 0 && slRpm >= 0.95 * SHOOTER_MAX_RPM) {
                     shooterLeftSpinUpTime = shooterLeftTimer.seconds();
@@ -465,19 +464,6 @@ public class DriveTrainServoShooter extends LinearOpMode {
             // =========================
             // TELEMETRY
             // =========================
-
-            // ---- Shooter Left monitor (πρώτο, για να φαίνεται πάντα στην οθόνη) ----
-            telemetry.addData("SL " + (shooterLeftOn ? "ON" : "OFF"),
-                    String.format("RPM %.0f | peak %.0f | pwr %.2f",
-                            slRpm, shooterLeftPeakRpm, shooterLeft.getPower()));
-            telemetry.addData("SL ticks",
-                    String.format("%d | από ON %d | %.0f t/s",
-                            slTicks, slTicks - shooterLeftStartTicks, slTicksPerSec));
-            telemetry.addData("SL amps",
-                    String.format("%.2f A | peak %.2f A | t=%s s | spinup=%s s",
-                            slCurrent, shooterLeftPeakCurrent,
-                            shooterLeftOn ? String.format("%.1f", shooterLeftTimer.seconds()) : "-",
-                            shooterLeftSpinUpTime >= 0 ? String.format("%.2f", shooterLeftSpinUpTime) : "-"));
 
             telemetry.addData(
                     "Drive Mode",
@@ -498,8 +484,12 @@ public class DriveTrainServoShooter extends LinearOpMode {
                     intakeOn ? "ON" : "OFF"
             );
 
+            // Shooter left: μόνο ticks και RPM
+            telemetry.addData("Shooter Left ticks", slTicks);
+            telemetry.addData("Shooter Left RPM", "%.0f", slRpm);
+
             telemetry.addData(
-                    "Shooter Right (LB)",
+                    "Shooter Right (RB)",
                     shooterRightOn ? "ON" : "OFF"
             );
 
