@@ -25,6 +25,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //          A SLOW MODE
 //          Y FIELD ORIENTED / ROBOT ORIENTED
 //          X INTAKE
+//          B OUTTAKE
 // =========================
 
 @TeleOp(name = "Grobo-DriveTrain_Shooter_Servo")
@@ -67,6 +68,9 @@ public class DriveTrainServoShooter extends LinearOpMode {
 
         // Ticks ανά περιστροφή του encoder (άλλαξέ το ανάλογα με το motor σου)
         final double SHOOTER_TICKS_PER_REV = 28;
+
+        // Ticks ανά περιστροφή του encoder του intake motor (άλλαξέ το ανάλογα με το motor σου)
+        final double INTAKE_TICKS_PER_REV = 28;
 
         // --- Παρακολούθηση shooter left ---
         // Χρόνος από τη στιγμή που άνοιξε το shooter
@@ -146,8 +150,8 @@ public class DriveTrainServoShooter extends LinearOpMode {
         // INTAKE MOTOR
         // =========================
 
-        DcMotor intakeMotor = hardwareMap.get(
-                DcMotor.class,
+        DcMotorEx intakeMotor = hardwareMap.get(
+                DcMotorEx.class,
                 "intakeMotor"
         );
 
@@ -483,6 +487,10 @@ public class DriveTrainServoShooter extends LinearOpMode {
                     "Intake (X)",
                     intakeOn ? "ON" : "OFF"
             );
+
+            // Στροφές (RPM) του intake motor
+            double intakeRpm = Math.abs(intakeMotor.getVelocity()) * 60.0 / INTAKE_TICKS_PER_REV;
+            telemetry.addData("Intake RPM", "%.0f", intakeRpm);
 
             // Shooter left: μόνο ticks και RPM
             telemetry.addData("Shooter Left ticks", slTicks);
