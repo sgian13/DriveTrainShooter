@@ -25,7 +25,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 //          A SLOW MODE
 //          Y FIELD ORIENTED / ROBOT ORIENTED
 //          X INTAKE
-//          B OUTTAKE
 // =========================
 
 @TeleOp(name = "Grobo-DriveTrain_Shooter_Servo")
