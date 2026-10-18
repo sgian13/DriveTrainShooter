@@ -37,8 +37,9 @@ public class DriveTrainServoShooterNEW extends LinearOpMode {
     private static final double SHOOTER_TICKS_PER_REV = 28;
     private static final double SHOOTER_MAX_RPM = 6000;
 
-    private static final double SHOOTER_LEFT_TARGET_RPM = 6000;
-    private static final double SHOOTER_RIGHT_TARGET_RPM = 6000;
+    // ΑΛΛΑΓΗ #1: target κάτω από το max ώστε το PID να έχει headroom
+    private static final double SHOOTER_LEFT_TARGET_RPM = 5600;
+    private static final double SHOOTER_RIGHT_TARGET_RPM = 5600;
 
     private static final double SHOOTER_KP = 0.00030;
     private static final double SHOOTER_KI = 0.00003;
@@ -435,9 +436,15 @@ public class DriveTrainServoShooterNEW extends LinearOpMode {
             dpadPressed[2] = dpadEdges[2].pressed(gamepad1.dpad_right);
             dpadPressed[3] = dpadEdges[3].pressed(gamepad1.dpad_left);
 
-            double headingDeg = (imu != null)
-                    ? imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES)
-                    : 0.0;
+            // ΑΛΛΑΓΗ #4: IMU read με try/catch ώστε να μην κρασάρει αν αποσυνδεθεί
+            double headingDeg = 0.0;
+            if (imu != null) {
+                try {
+                    headingDeg = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+                } catch (Exception ignored) {
+                    // κρατάμε την τελευταία γνωστή τιμή / 0
+                }
+            }
 
             if (backPressed) {
 
@@ -461,7 +468,7 @@ public class DriveTrainServoShooterNEW extends LinearOpMode {
                     if (imu != null) imu.resetYaw();
                     holdHeadingDeg = 0;
                     headingSettleTimer.reset();
-                    headingDeg = 0;
+                    // ΑΛΛΑΓΗ #5: αφαιρέθηκε το περιττό headingDeg = 0;
                 }
             }
 
@@ -512,11 +519,16 @@ public class DriveTrainServoShooterNEW extends LinearOpMode {
                 }
             }
 
-            if (shooterLeft != null && shooterLeft.update(killSwitch, dt)) {
-                gamepad1.rumbleBlips(1);
+            // ΑΛΛΑΓΗ #3: ένα μόνο rumble αν ΟΠΟΙΟΔΗΠΟΤΕ shooter γίνει ready
+            // Χρήση |= για να εκτελεστούν και τα δύο updates (χωρίς short-circuit)
+            boolean anyShooterReady = false;
+            if (shooterLeft != null) {
+                anyShooterReady |= shooterLeft.update(killSwitch, dt);
             }
-
-            if (shooterRight != null && shooterRight.update(killSwitch, dt)) {
+            if (shooterRight != null) {
+                anyShooterReady |= shooterRight.update(killSwitch, dt);
+            }
+            if (anyShooterReady) {
                 gamepad1.rumbleBlips(1);
             }
 
@@ -535,7 +547,9 @@ public class DriveTrainServoShooterNEW extends LinearOpMode {
             double forwardCmd = stickY * driveSpeed;
             double turnCmd = stickRx * turnSpeed;
 
-            boolean driverTurning = Math.abs(rawRx) >= STICK_DEADBAND;
+            // ΑΛΛΑΓΗ #2: χρήση curved τιμής ώστε το heading hold να μένει
+            // ενεργό μέχρι να στρίψει πραγματικά ο driver
+            boolean driverTurning = Math.abs(stickRx) > 0.02;
 
             if (killSwitch || !headingHold || driverTurning) {
 
