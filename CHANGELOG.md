@@ -17,3 +17,5 @@
 - Ο δεξιός shooter έγινε `DcMotorEx` και έχει telemetry RPM.
 - Τα hardcoded στοιχεία (power, ticks, θέσεις servo, slow mode) μαζεύτηκαν σε σταθερές στην αρχή του αρχείου.
 - README, LICENSE, `.gitignore`, CHANGELOG.
+
+- Ενημερώθηκε το README για τη δομή των αρχείων, τις εξαρτήσεις, τα χειριστήρια και τους ελέγχους ασφαλείας.
