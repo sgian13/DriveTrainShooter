@@ -33,8 +33,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 @TeleOp(name = "Grobo-DriveTrain_Shooter_ServoMAIN")
 public class DriveTrainServoShooterNEW extends LinearOpMode {
 
-    private static final double SHOOTER_LEFT_TARGET_RPM  = 5600;
-    private static final double SHOOTER_RIGHT_TARGET_RPM = 5600;
+    private static final double SHOOTER_LEFT_TARGET_RPM  = 6000;
+    private static final double SHOOTER_RIGHT_TARGET_RPM = 6000;
 
     private static final double INTAKE_TICKS_PER_REV = 28;
 
@@ -71,6 +71,9 @@ public class DriveTrainServoShooterNEW extends LinearOpMode {
         boolean killSwitch = false;
 
         boolean[] servoActive = new boolean[4];
+        double[] servoLastPos = {SERVO_REST, SERVO_REST, SERVO_REST, SERVO_REST};
+        boolean leftWasReady = false;
+        boolean rightWasReady = false;
 
         Edge backEdge  = new Edge();
         Edge startEdge = new Edge();
@@ -317,7 +320,7 @@ public class DriveTrainServoShooterNEW extends LinearOpMode {
             double forwardCmd = stickY  * driveSpeed;
             double turnCmd    = stickRx * turnSpeed;
 
-            boolean driverTurning = Math.abs(stickRx) > 0.02;
+            boolean driverTurning = Math.abs(gamepad1.right_stick_x) > STICK_DEADBAND;
 
             if (killSwitch || !headingHold || driverTurning) {
                 holdHeadingDeg = headingDeg;
