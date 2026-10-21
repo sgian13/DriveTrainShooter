@@ -65,3 +65,11 @@ FTC TeleOp για mecanum drivetrain, intake, δύο ανεξάρτητους sh
 ## Άδεια
 
 MIT — δες το [LICENSE](LICENSE).
+
+## Legacy TeleOp
+
+The previous implementation has been restored as a separate source file so it is not lost:
+- [DriveTrainServoShooter.java](TeamCode/src/main/java/org/firstinspires/ftc/teamcode/DriveTrainServoShooter.java) — restored previous implementation, exposed as `Grobo-DriveTrain_Shooter_Servo_LEGACY`.
+- [DriveTrainServoShooterNEW.java](DriveTrainServoShooterNEW.java) — newer implementation.
+
+The legacy class was given its own Java class name and OpMode label to avoid duplicate class/OpMode names. Hardware configuration and behavior should still be checked on the robot before competition use.
